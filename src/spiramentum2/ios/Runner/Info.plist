@@ -41,5 +41,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Store mindful session time spent in HealthKit</string>
+	<key></key>
+	<string></string>
 </dict>
 </plist>

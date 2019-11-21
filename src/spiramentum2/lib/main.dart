@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
 import 'package:sprintf/sprintf.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(MyApp());
 
@@ -30,15 +31,25 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
   int selectedMinutes = 1;
 
-  void _updateTimer() {
+  static const platform = const MethodChannel('de.sventropy/mindfulness-minutes');
+
+  Future<void> _updateTimer () async {
+
+    // User might have canceled timer
+    if (!isTimerRunning){
+      return;
+    }
+
+    // Calculate time
+    DateTime currentDateTime = DateTime.now();
+    Duration difference = currentDateTime.difference(startDateTime);
+    int minutes = difference.inMinutes;
+    int seconds = difference.inSeconds - minutes * 60;
+
+    // Update UI
     setState(() {
       if (isTimerRunning) {
-        DateTime currentDateTime = DateTime.now();
-        Duration difference = currentDateTime.difference(startDateTime);
-        int minutes = difference.inMinutes;
-        int seconds = difference.inSeconds - minutes * 60;
         timerText = sprintf("%02d:%02d", [minutes, seconds]);
-        print("Timer shows $timerText");
 
         if (minutes >= selectedMinutes) {
           print("Timer goal reached. Stopping.");
@@ -48,15 +59,33 @@ class _MyHomePageState extends State<MyHomePage> {
           return;
         }
 
-        Timer.periodic(Duration(seconds: 1), (timer) {
-          _updateTimer();
-          timer.cancel();
-        });
       } else {
         // No timer to schedule
         timerText = "00:00";
       }
     });
+
+    // When timer is finished, store the time
+    if(!isTimerRunning){
+      await this._storeMindfulMinutes(minutes);
+    } else {
+      // Or schedule for the next update
+      Timer.periodic(Duration(seconds: 1), (timer) {
+        _updateTimer();
+        timer.cancel();
+      });
+    }
+    print("Timer shows $timerText");
+  }
+
+  Future<void> _storeMindfulMinutes(int minutes) async {
+    try {
+      await platform.invokeMethod('storeMindfulMinutes',minutes);
+      print("$minutes stored");
+    } on PlatformException catch (e) {
+      print(e);
+    }
+
   }
 
   @override
@@ -95,12 +124,15 @@ class _MyHomePageState extends State<MyHomePage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 64.0),
             ),
             CupertinoButton(
-              child: Text("Start/Stop"),
+              child: Text(isTimerRunning ? "Cancel": "Start"),
               onPressed: () {
                 if (isTimerRunning) {
                   print("Stopping timer");
                   isTimerRunning = false;
                   startDateTime = null;
+                  setState(() {
+                    timerText = "00:00";
+                  });
                 } else {
                   print("Starting timer");
                   // Timer is not running

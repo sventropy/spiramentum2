@@ -13,6 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install dependencies
-      run: cd src/spiramentum2 && pub get
+      run: cd src/spiramentum2 && flutter pub get
     - name: Run tests
-      run: cd src/spiramentum2 && pub run test
+      run: cd src/spiramentum2 && flutter pub run test

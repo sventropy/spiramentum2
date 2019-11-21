@@ -41,10 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
         timerText = sprintf("%02d:%02d", [minutes, seconds]);
 
         if (minutes >= selectedMinutes) {
-          print("Timer goal reached. Stopping.");
-          isTimerRunning = false;
-          startDateTime = null;
-          timerText = "00:00";
+          print("Timer goal reached.");
+          this._cancelTimer();
           return;
         }
 
@@ -65,6 +63,15 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
     print("Timer shows $timerText");
+  }
+
+  _cancelTimer() {
+    print("Stopping timer");
+    setState(() {
+      isTimerRunning = false;
+      startDateTime = null;
+      timerText = "00:00";
+    });
   }
 
   @override
@@ -106,12 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text(isTimerRunning ? "Cancel": "Start"),
               onPressed: () {
                 if (isTimerRunning) {
-                  print("Stopping timer");
-                  isTimerRunning = false;
-                  startDateTime = null;
-                  setState(() {
-                    timerText = "00:00";
-                  });
+                  this._cancelTimer();
                 } else {
                   print("Starting timer");
                   // Timer is not running

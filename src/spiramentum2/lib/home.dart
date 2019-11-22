@@ -107,7 +107,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
       onPressed: () {
         if (_isTimerRunning) {
-          _animationController.reverse();
           this._cancelTimer();
         } else {
           print("Starting timer");
@@ -186,6 +185,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   _cancelTimer() {
     print("Stopping timer");
+    _animationController.reverse();
     setState(() {
       _isTimerRunning = false;
       _startDateTime = null;

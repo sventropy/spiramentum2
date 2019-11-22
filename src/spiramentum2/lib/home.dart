@@ -51,7 +51,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     final titleText = Padding(
       padding: EdgeInsets.all(16),
       child: Text("How much time do you want to spend on yourself today?",
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color:Colors.lightGreen
+        ),
         textScaleFactor: 2,
         textAlign: TextAlign.center)
     );
@@ -61,15 +64,15 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: Container(
           height: 200,
           child: CupertinoPicker(
-            backgroundColor: Color.fromARGB(0, 0, 0, 0),
+            backgroundColor: Colors.transparent,
             children: <Widget>[
-              Text("1 minute"),
-              Text("2 minutes"),
-              Text("5 minutes"),
-              Text("10 minutes"),
-              Text("20 minutes"),
-              Text("30 minutes"),
-              Text("60 minutes"),
+              Text("1 minute", style: TextStyle(color: Colors.white)),
+              Text("2 minutes", style: TextStyle(color: Colors.white)),
+              Text("5 minutes", style: TextStyle(color: Colors.white)),
+              Text("10 minutes", style: TextStyle(color: Colors.white)),
+              Text("20 minutes", style: TextStyle(color: Colors.white)),
+              Text("30 minutes", style: TextStyle(color: Colors.white)),
+              Text("60 minutes", style: TextStyle(color: Colors.white)),
             ],
             itemExtent: 44.0,
             onSelectedItemChanged: (index) {
@@ -85,7 +88,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       child: Center(
         child: Text(
           _timerText,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 64.0),
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 64.0,
+              color: Colors.white),
           textAlign: TextAlign.center,
         ),
       ),
@@ -93,15 +99,15 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
     final startStopButton = ClipOval(
       child: Material(
-        color: Colors.blue, // button color
+        color: Colors.white, // button color
         child: InkWell(
-          splashColor: Colors.red, // inkwell color
+          splashColor: Colors.lightGreen, // inkwell color
           child: SizedBox(
             height: 100,
             width: 100,
             child: Icon(
                 _isTimerRunning ? Icons.cancel : Icons.play_arrow,
-                color: Colors.white, size: 80),
+                color: Colors.black, size: 80),
           ),
           onTap: () {
             if (_isTimerRunning) {
@@ -121,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
 
     return CupertinoPageScaffold(
+      backgroundColor: Colors.black,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

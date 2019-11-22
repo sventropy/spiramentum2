@@ -67,13 +67,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           child: CupertinoPicker(
             backgroundColor: Colors.transparent,
             children: <Widget>[
-              Text("1 minute", style: TextStyle(color: Colors.white)),
-              Text("2 minutes", style: TextStyle(color: Colors.white)),
-              Text("5 minutes", style: TextStyle(color: Colors.white)),
-              Text("10 minutes", style: TextStyle(color: Colors.white)),
-              Text("20 minutes", style: TextStyle(color: Colors.white)),
-              Text("30 minutes", style: TextStyle(color: Colors.white)),
-              Text("60 minutes", style: TextStyle(color: Colors.white)),
+              Text("1 minute", style: TextStyle(color: kTextColor)),
+              Text("2 minutes", style: TextStyle(color: kTextColor)),
+              Text("5 minutes", style: TextStyle(color: kTextColor)),
+              Text("10 minutes", style: TextStyle(color: kTextColor)),
+              Text("20 minutes", style: TextStyle(color: kTextColor)),
+              Text("30 minutes", style: TextStyle(color: kTextColor)),
+              Text("60 minutes", style: TextStyle(color: kTextColor)),
             ],
             itemExtent: 44.0,
             onSelectedItemChanged: (index) {
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
 
     final startStopButton = CupertinoButton(
-      color: Colors.lightGreen,
+      color: kPrimaryAccentColor,
       child: Icon(
           _isTimerRunning ? CupertinoIcons.clear : CupertinoIcons.play_arrow,
           color: kTextColor,

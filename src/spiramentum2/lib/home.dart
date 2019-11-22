@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:spiramentum2/mindfulStore.dart';
 import 'dart:async';
 import 'package:sprintf/sprintf.dart';
@@ -22,7 +23,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   int _selectedMinutes;
   MindfulStore _mindfulStore;
   AnimationController _animationController;
-  Animation<double> _animation;
+  Animation<double> _pickerAnimation;
+  Animation<double> _counterLabelAnimation;
 
   @override
   void initState() {
@@ -32,8 +34,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _selectedMinutes = 1;
     _mindfulStore = new MindfulStore();
     _animationController  =
-        AnimationController(duration: const Duration(seconds: 1), vsync: this);
-    _animation = Tween<double>(begin: 1, end:0).animate(_animationController);
+        AnimationController(duration: const Duration(milliseconds: 400), vsync: this);
+    _pickerAnimation = Tween<double>(begin: 1, end:0).animate(_animationController);
+    _counterLabelAnimation = Tween<double>(begin: 0, end: 1).animate(_animationController);
   }
 
   @override
@@ -99,20 +102,20 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text("Spiramentum"),
-      ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Padding(padding: EdgeInsets.all(16),child:
-            Text("How much time do you want to spend on yourself today?",
+            Spacer(),
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Text("How much time do you want to spend on yourself today?",
                 style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 2,
-            textAlign: TextAlign.center,),
+                textAlign: TextAlign.center,),
             ),
+            Spacer(),
             SizeTransition(
-                sizeFactor: _animation,
+                sizeFactor: _pickerAnimation,
                 child: Container(
                   height: 200,
                   child: CupertinoPicker(
@@ -134,27 +137,46 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   ),
                 )
             ),
-            Text(
-              _timerText,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 64.0),
+            SizeTransition(
+              sizeFactor: _counterLabelAnimation,
+              child: Center(
+                child: Text(
+                  _timerText,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 64.0),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
-            CupertinoButton(
-              child: Text(_isTimerRunning ? "Cancel": "Start"),
-              onPressed: () {
-                if (_isTimerRunning) {
-                  _animationController.reverse();
-                  this._cancelTimer();
-                } else {
-                  print("Starting timer");
-                  _animationController.forward();
-                  // Timer is not running
-                  _isTimerRunning = true;
-                  _startDateTime = DateTime.now();
-                }
-
-                _updateTimer();
-              },
-            )
+            Spacer(),
+            ClipOval(
+              child: Material(
+                color: Colors.blue, // button color
+                child: InkWell(
+                  splashColor: Colors.red, // inkwell color
+                  child: SizedBox(
+                          height: 100,
+                          width: 100,
+                          child: Icon(
+                              _isTimerRunning ? Icons.cancel : Icons.play_arrow,
+                              color: Colors.white, size: 80),
+                          ),
+                  onTap: () {
+                    if (_isTimerRunning) {
+                      _animationController.reverse();
+                      this._cancelTimer();
+                    } else {
+                      print("Starting timer");
+                      _animationController.forward();
+                      // Timer is not running
+                      _isTimerRunning = true;
+                      _startDateTime = DateTime.now();
+                    }
+                    _updateTimer();
+                  },
+                ),
+              ),
+            ),
+            Spacer()
           ],
         ),
       ),

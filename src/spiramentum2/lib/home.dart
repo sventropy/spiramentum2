@@ -106,6 +106,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Padding(padding: EdgeInsets.all(16),child:
+            Text("How much time do you want to spend on yourself today?",
+                style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 2,
+            textAlign: TextAlign.center,),
+            ),
             SizeTransition(
                 sizeFactor: _animation,
                 child: Container(

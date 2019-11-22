@@ -1,7 +1,19 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'home.dart';
 
-void main() => runApp(MyApp());
+
+void main() {
+  // Override status bar on ios
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.white, // android
+        statusBarBrightness: Brightness.dark // iOS
+      )
+  );
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override

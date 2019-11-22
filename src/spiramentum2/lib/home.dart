@@ -4,7 +4,7 @@ import 'package:spiramentum2/mindfulStore.dart';
 import 'dart:async';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter/animation.dart';
-
+import 'theme.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -26,6 +26,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Animation<double> _pickerAnimation;
   Animation<double> _counterLabelAnimation;
 
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _mindfulStore = new MindfulStore();
     _animationController  =
         AnimationController(duration: const Duration(milliseconds: 400), vsync: this);
-    _pickerAnimation = Tween<double>(begin: 1, end:0).animate(_animationController);
+    _pickerAnimation = Tween<double>(begin: 1, end: 0).animate(_animationController);
     _counterLabelAnimation = Tween<double>(begin: 0, end: 1).animate(_animationController);
   }
 
@@ -53,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       child: Text("How much time do you want to spend on yourself today?",
         style: TextStyle(
             fontWeight: FontWeight.bold,
-            color:Colors.lightGreen
+            color: kPrimaryAccentColor
         ),
         textScaleFactor: 2,
         textAlign: TextAlign.center)
@@ -91,43 +92,36 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 64.0,
-              color: Colors.white),
+              color: kTextColor),
           textAlign: TextAlign.center,
         ),
       ),
     );
 
-    final startStopButton = ClipOval(
-      child: Material(
-        color: Colors.white, // button color
-        child: InkWell(
-          splashColor: Colors.lightGreen, // inkwell color
-          child: SizedBox(
-            height: 100,
-            width: 100,
-            child: Icon(
-                _isTimerRunning ? Icons.cancel : Icons.play_arrow,
-                color: Colors.black, size: 80),
-          ),
-          onTap: () {
-            if (_isTimerRunning) {
-              _animationController.reverse();
-              this._cancelTimer();
-            } else {
-              print("Starting timer");
-              _animationController.forward();
-              // Timer is not running
-              _isTimerRunning = true;
-              _startDateTime = DateTime.now();
-            }
-            _updateTimer();
-          },
-        ),
+    final startStopButton = CupertinoButton(
+      color: Colors.lightGreen,
+      child: Icon(
+          _isTimerRunning ? CupertinoIcons.clear : CupertinoIcons.play_arrow,
+          color: kTextColor,
+          size: 44
       ),
+      onPressed: () {
+        if (_isTimerRunning) {
+          _animationController.reverse();
+          this._cancelTimer();
+        } else {
+          print("Starting timer");
+          _animationController.forward();
+          // Timer is not running
+          _isTimerRunning = true;
+          _startDateTime = DateTime.now();
+        }
+        _updateTimer();
+      },
     );
 
     return CupertinoPageScaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: kBackgroundColor,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

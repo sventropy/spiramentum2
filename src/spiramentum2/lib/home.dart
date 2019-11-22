@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:spiramentum2/mindfulStore.dart';
 import 'dart:async';
 import 'package:sprintf/sprintf.dart';
+import 'package:flutter/animation.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -13,34 +14,53 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
 
-  String timerText = "00:00";
-  DateTime startDateTime;
-  bool isTimerRunning = false;
-  int selectedIndex = 0;
-  int selectedMinutes = 1;
-  MindfulStore mindfulStore = new MindfulStore();
+  String _timerText;
+  DateTime _startDateTime;
+  bool _isTimerRunning;
+  int _selectedMinutes;
+  MindfulStore _mindfulStore;
+  AnimationController _animationController;
+  Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _timerText = "00:00";
+    _isTimerRunning = false;
+    _selectedMinutes = 1;
+    _mindfulStore = new MindfulStore();
+    _animationController  =
+        AnimationController(duration: const Duration(seconds: 1), vsync: this);
+    _animation = Tween<double>(begin: 1, end:0).animate(_animationController);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   Future<void> _updateTimer () async {
 
     // User might have canceled timer
-    if (!isTimerRunning){
+    if (!_isTimerRunning){
       return;
     }
 
     // Calculate time
     DateTime currentDateTime = DateTime.now();
-    Duration difference = currentDateTime.difference(startDateTime);
+    Duration difference = currentDateTime.difference(_startDateTime);
     int minutes = difference.inMinutes;
     int seconds = difference.inSeconds - minutes * 60;
 
     // Update UI
     setState(() {
-      if (isTimerRunning) {
-        timerText = sprintf("%02d:%02d", [minutes, seconds]);
+      if (_isTimerRunning) {
+        _timerText = sprintf("%02d:%02d", [minutes, seconds]);
 
-        if (minutes >= selectedMinutes) {
+        if (minutes >= _selectedMinutes) {
           print("Timer goal reached.");
           this._cancelTimer();
           return;
@@ -48,13 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
       } else {
         // No timer to schedule
-        timerText = "00:00";
+        _timerText = "00:00";
       }
     });
 
     // When timer is finished, store the time
-    if(!isTimerRunning){
-      await mindfulStore.storeMindfulMinutes(minutes);
+    if(!_isTimerRunning){
+      await _mindfulStore.storeMindfulMinutes(minutes);
     } else {
       // Or schedule for the next update
       Timer.periodic(Duration(seconds: 1), (timer) {
@@ -62,17 +82,18 @@ class _MyHomePageState extends State<MyHomePage> {
         timer.cancel();
       });
     }
-    print("Timer shows $timerText");
+    print("Timer shows $_timerText");
   }
 
   _cancelTimer() {
     print("Stopping timer");
     setState(() {
-      isTimerRunning = false;
-      startDateTime = null;
-      timerText = "00:00";
+      _isTimerRunning = false;
+      _startDateTime = null;
+      _timerText = "00:00";
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,40 +106,45 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
-              height: 200.0,
-              child: CupertinoPicker(
-                backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                children: <Widget>[
-                  Text("1 minute"),
-                  Text("2 minutes"),
-                  Text("5 minutes"),
-                  Text("10 minutes"),
-                  Text("20 minutes"),
-                  Text("30 minutes"),
-                  Text("60 minutes"),
-                ],
-                itemExtent: 44.0,
-                onSelectedItemChanged: (index) {
-                  selectedMinutes = minutesForPickerIndex(index);
-                  print("Interval updated to $selectedMinutes minutes");
-                },
-              ),
+            SizeTransition(
+                sizeFactor: _animation,
+                child: Container(
+                  height: 200,
+                  child: CupertinoPicker(
+                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                    children: <Widget>[
+                      Text("1 minute"),
+                      Text("2 minutes"),
+                      Text("5 minutes"),
+                      Text("10 minutes"),
+                      Text("20 minutes"),
+                      Text("30 minutes"),
+                      Text("60 minutes"),
+                    ],
+                    itemExtent: 44.0,
+                    onSelectedItemChanged: (index) {
+                      _selectedMinutes = minutesForPickerIndex(index);
+                      print("Interval updated to $_selectedMinutes minutes");
+                    },
+                  ),
+                )
             ),
             Text(
-              timerText,
+              _timerText,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 64.0),
             ),
             CupertinoButton(
-              child: Text(isTimerRunning ? "Cancel": "Start"),
+              child: Text(_isTimerRunning ? "Cancel": "Start"),
               onPressed: () {
-                if (isTimerRunning) {
+                if (_isTimerRunning) {
+                  _animationController.reverse();
                   this._cancelTimer();
                 } else {
                   print("Starting timer");
+                  _animationController.forward();
                   // Timer is not running
-                  isTimerRunning = true;
-                  startDateTime = DateTime.now();
+                  _isTimerRunning = true;
+                  _startDateTime = DateTime.now();
                 }
 
                 _updateTimer();

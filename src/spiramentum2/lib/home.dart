@@ -45,6 +45,101 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+
+    final titleText = Padding(
+      padding: EdgeInsets.all(16),
+      child: Text("How much time do you want to spend on yourself today?",
+        style: TextStyle(fontWeight: FontWeight.bold),
+        textScaleFactor: 2,
+        textAlign: TextAlign.center)
+    );
+
+    final pickerTransition = SizeTransition(
+        sizeFactor: _pickerAnimation,
+        child: Container(
+          height: 200,
+          child: CupertinoPicker(
+            backgroundColor: Color.fromARGB(0, 0, 0, 0),
+            children: <Widget>[
+              Text("1 minute"),
+              Text("2 minutes"),
+              Text("5 minutes"),
+              Text("10 minutes"),
+              Text("20 minutes"),
+              Text("30 minutes"),
+              Text("60 minutes"),
+            ],
+            itemExtent: 44.0,
+            onSelectedItemChanged: (index) {
+              _selectedMinutes = _minutesForPickerIndex(index);
+              print("Interval updated to $_selectedMinutes minutes");
+            },
+          ),
+        )
+    );
+
+    final timerTextTransition = SizeTransition(
+      sizeFactor: _counterLabelAnimation,
+      child: Center(
+        child: Text(
+          _timerText,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 64.0),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+
+    final startStopButton = ClipOval(
+      child: Material(
+        color: Colors.blue, // button color
+        child: InkWell(
+          splashColor: Colors.red, // inkwell color
+          child: SizedBox(
+            height: 100,
+            width: 100,
+            child: Icon(
+                _isTimerRunning ? Icons.cancel : Icons.play_arrow,
+                color: Colors.white, size: 80),
+          ),
+          onTap: () {
+            if (_isTimerRunning) {
+              _animationController.reverse();
+              this._cancelTimer();
+            } else {
+              print("Starting timer");
+              _animationController.forward();
+              // Timer is not running
+              _isTimerRunning = true;
+              _startDateTime = DateTime.now();
+            }
+            _updateTimer();
+          },
+        ),
+      ),
+    );
+
+    return CupertinoPageScaffold(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Spacer(),
+            titleText,
+            Spacer(),
+            pickerTransition,
+            timerTextTransition,
+            Spacer(),
+            startStopButton,
+            Spacer()
+          ],
+        ),
+      ),
+    );
+  }
+
+
   Future<void> _updateTimer () async {
 
     // User might have canceled timer
@@ -97,93 +192,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     });
   }
 
-
-  @override
-  Widget build(BuildContext context) {
-
-    return CupertinoPageScaffold(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Spacer(),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Text("How much time do you want to spend on yourself today?",
-                style: TextStyle(fontWeight: FontWeight.bold), textScaleFactor: 2,
-                textAlign: TextAlign.center,),
-            ),
-            Spacer(),
-            SizeTransition(
-                sizeFactor: _pickerAnimation,
-                child: Container(
-                  height: 200,
-                  child: CupertinoPicker(
-                    backgroundColor: Color.fromARGB(0, 0, 0, 0),
-                    children: <Widget>[
-                      Text("1 minute"),
-                      Text("2 minutes"),
-                      Text("5 minutes"),
-                      Text("10 minutes"),
-                      Text("20 minutes"),
-                      Text("30 minutes"),
-                      Text("60 minutes"),
-                    ],
-                    itemExtent: 44.0,
-                    onSelectedItemChanged: (index) {
-                      _selectedMinutes = minutesForPickerIndex(index);
-                      print("Interval updated to $_selectedMinutes minutes");
-                    },
-                  ),
-                )
-            ),
-            SizeTransition(
-              sizeFactor: _counterLabelAnimation,
-              child: Center(
-                child: Text(
-                  _timerText,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 64.0),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            Spacer(),
-            ClipOval(
-              child: Material(
-                color: Colors.blue, // button color
-                child: InkWell(
-                  splashColor: Colors.red, // inkwell color
-                  child: SizedBox(
-                          height: 100,
-                          width: 100,
-                          child: Icon(
-                              _isTimerRunning ? Icons.cancel : Icons.play_arrow,
-                              color: Colors.white, size: 80),
-                          ),
-                  onTap: () {
-                    if (_isTimerRunning) {
-                      _animationController.reverse();
-                      this._cancelTimer();
-                    } else {
-                      print("Starting timer");
-                      _animationController.forward();
-                      // Timer is not running
-                      _isTimerRunning = true;
-                      _startDateTime = DateTime.now();
-                    }
-                    _updateTimer();
-                  },
-                ),
-              ),
-            ),
-            Spacer()
-          ],
-        ),
-      ),
-    );
-  }
-
-  int minutesForPickerIndex(int index) {
+  int _minutesForPickerIndex(int index) {
     switch (index) {
       case 0:
         return 1;

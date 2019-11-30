@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:spiramentum2/mindfulStore.dart';
+import 'package:spiramentum2/notificationService.dart';
 import 'dart:async';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter/animation.dart';
@@ -22,6 +23,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   bool _isTimerRunning;
   int _selectedMinutes;
   MindfulStore _mindfulStore;
+  NotificationService _notificationService;
   AnimationController _animationController;
   Animation<double> _pickerAnimation;
   Animation<double> _counterLabelAnimation;
@@ -34,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     _isTimerRunning = false;
     _selectedMinutes = 1;
     _mindfulStore = new MindfulStore();
+    _notificationService = new NotificationService();
     _animationController  =
         AnimationController(duration: const Duration(milliseconds: 400), vsync: this);
     _pickerAnimation = Tween<double>(begin: 1, end: 0).animate(_animationController);
@@ -140,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
 
-  Future<void> _updateTimer () async {
+  Future _updateTimer () async {
 
     // User might have canceled timer
     if (!_isTimerRunning){
@@ -158,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       if (_isTimerRunning) {
         _timerText = sprintf("%02d:%02d", [minutes, seconds]);
 
-        if (minutes >= _selectedMinutes) {
+        if (seconds > 5) {
           print("Timer goal reached.");
           this._cancelTimer();
           return;
@@ -171,12 +174,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     });
 
     // When timer is finished, store the time
+    print("$_isTimerRunning");
     if(!_isTimerRunning){
-      await _mindfulStore.storeMindfulMinutes(minutes);
+      await _storeMindfulMinutes(minutes);
     } else {
       // Or schedule for the next update
-      Timer.periodic(Duration(seconds: 1), (timer) {
-        _updateTimer();
+      Timer.periodic(Duration(seconds: 1), (timer) async {
+        await _updateTimer();
         timer.cancel();
       });
     }
@@ -191,6 +195,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       _startDateTime = null;
       _timerText = "00:00";
     });
+  }
+
+  Future _storeMindfulMinutes(int minutes) async {
+    print("test1");
+    await _mindfulStore.storeMindfulMinutes(minutes);
+    print("test2");
+    await _notificationService.showNotification("Mindful time complete", "The time spent was stored");
+    print("test3");
   }
 
   int _minutesForPickerIndex(int index) {

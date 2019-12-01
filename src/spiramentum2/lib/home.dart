@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       if (_isTimerRunning) {
         _timerText = sprintf("%02d:%02d", [minutes, seconds]);
 
-        if (seconds > 5) {
+        if (minutes >= _selectedMinutes) {
           print("Timer goal reached.");
           this._cancelTimer();
           return;

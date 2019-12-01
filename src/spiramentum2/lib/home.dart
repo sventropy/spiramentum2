@@ -63,27 +63,29 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         textAlign: TextAlign.center)
     );
 
+    final durationPicker = CupertinoPicker(
+      backgroundColor: Colors.transparent,
+      children: <Widget>[
+        Text("1 minute", style: TextStyle(color: kTextColor)),
+        Text("2 minutes", style: TextStyle(color: kTextColor)),
+        Text("5 minutes", style: TextStyle(color: kTextColor)),
+        Text("10 minutes", style: TextStyle(color: kTextColor)),
+        Text("20 minutes", style: TextStyle(color: kTextColor)),
+        Text("30 minutes", style: TextStyle(color: kTextColor)),
+        Text("60 minutes", style: TextStyle(color: kTextColor)),
+      ],
+      itemExtent: 44.0,
+      onSelectedItemChanged: (index) {
+        _selectedMinutes = _minutesForPickerIndex(index);
+        print("Interval updated to $_selectedMinutes minutes");
+      },
+    );
+
     final pickerTransition = SizeTransition(
         sizeFactor: _pickerAnimation,
         child: Container(
           height: 200,
-          child: CupertinoPicker(
-            backgroundColor: Colors.transparent,
-            children: <Widget>[
-              Text("1 minute", style: TextStyle(color: kTextColor)),
-              Text("2 minutes", style: TextStyle(color: kTextColor)),
-              Text("5 minutes", style: TextStyle(color: kTextColor)),
-              Text("10 minutes", style: TextStyle(color: kTextColor)),
-              Text("20 minutes", style: TextStyle(color: kTextColor)),
-              Text("30 minutes", style: TextStyle(color: kTextColor)),
-              Text("60 minutes", style: TextStyle(color: kTextColor)),
-            ],
-            itemExtent: 44.0,
-            onSelectedItemChanged: (index) {
-              _selectedMinutes = _minutesForPickerIndex(index);
-              print("Interval updated to $_selectedMinutes minutes");
-            },
-          ),
+          child: durationPicker
         )
     );
 

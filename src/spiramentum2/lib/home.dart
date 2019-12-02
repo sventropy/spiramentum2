@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/animation.dart';
 import 'package:spiramentum2/mindfulStore.dart';
 import 'package:spiramentum2/notificationService.dart';
-import 'dart:async';
 import 'package:sprintf/sprintf.dart';
-import 'package:flutter/animation.dart';
+import 'dart:async';
 import 'theme.dart';
+import 'logger.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -81,7 +82,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
       itemExtent: 44.0,
       onSelectedItemChanged: (index) {
         _selectedMinutes = _minutesForPickerIndex(index);
-        print("Interval updated to $_selectedMinutes minutes");
+        Logger.instance.debug("Interval updated to $_selectedMinutes minutes");
       },
     );
 
@@ -118,7 +119,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
         if (isTimerRunning) {
           this._cancelTimer();
         } else {
-          print("Starting timer");
+          Logger.instance.debug("Starting timer");
           _animationController.forward();
           // Timer is not running
           isTimerRunning = true;
@@ -168,7 +169,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
         _timerText = sprintf("%02d:%02d", [minutes, seconds]);
 
         if (minutes >= _selectedMinutes) {
-          print("Timer goal reached.");
+          Logger.instance.debug("Timer goal reached.");
           this._cancelTimer();
           return;
         }
@@ -189,11 +190,11 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
         timer.cancel();
       });
     }
-    print("Timer shows $_timerText");
+    Logger.instance.trace("Timer shows $_timerText");
   }
 
   _cancelTimer() {
-    print("Stopping timer");
+    Logger.instance.debug("Stopping timer");
     _animationController.reverse();
     setState(() {
       isTimerRunning = false;
@@ -203,11 +204,8 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
   }
 
   Future _storeMindfulMinutes(int minutes) async {
-    print("test1");
     await _mindfulStore.storeMindfulMinutes(minutes);
-    print("test2");
     await _notificationService.showNotification("Mindful time complete", "The time spent was stored");
-    print("test3");
   }
 
   int _minutesForPickerIndex(int index) {

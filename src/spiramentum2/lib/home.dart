@@ -205,7 +205,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
 
   Future _storeMindfulMinutes(int minutes) async {
     await _mindfulStore.storeMindfulMinutes(minutes);
-    await _notificationService.showNotification("Mindful time complete", "The time spent was stored");
+    await _notificationService.showNotification("Mindful time complete", "Time spent was stored in HealthKit");
   }
 
   int _minutesForPickerIndex(int index) {

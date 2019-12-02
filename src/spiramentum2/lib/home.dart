@@ -13,27 +13,27 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
 
+  bool isTimerRunning;
   String _timerText;
   DateTime _startDateTime;
-  bool _isTimerRunning;
   int _selectedMinutes;
   MindfulStore _mindfulStore;
   NotificationService _notificationService;
   AnimationController _animationController;
   Animation<double> _pickerAnimation;
   Animation<double> _counterLabelAnimation;
-
+  Timer _timer;
 
   @override
   void initState() {
     super.initState();
     _timerText = "00:00";
-    _isTimerRunning = false;
+    isTimerRunning = false;
     _selectedMinutes = 1;
     _mindfulStore = new MindfulStore();
     _notificationService = new NotificationService();
@@ -46,6 +46,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void dispose() {
     _animationController.dispose();
+    if(_timer != null) {
+      _timer.cancel();
+      _timer = null;
+    }
     super.dispose();
   }
 
@@ -106,18 +110,18 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     final startStopButton = CupertinoButton(
       color: kPrimaryAccentColor,
       child: Icon(
-          _isTimerRunning ? CupertinoIcons.clear : CupertinoIcons.play_arrow,
+          isTimerRunning ? CupertinoIcons.clear : CupertinoIcons.play_arrow_solid,
           color: kTextColor,
           size: 44
       ),
       onPressed: () {
-        if (_isTimerRunning) {
+        if (isTimerRunning) {
           this._cancelTimer();
         } else {
           print("Starting timer");
           _animationController.forward();
           // Timer is not running
-          _isTimerRunning = true;
+          isTimerRunning = true;
           _startDateTime = DateTime.now();
         }
         _updateTimer();
@@ -148,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Future _updateTimer () async {
 
     // User might have canceled timer
-    if (!_isTimerRunning){
+    if (!isTimerRunning){
       return;
     }
 
@@ -160,7 +164,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
     // Update UI
     setState(() {
-      if (_isTimerRunning) {
+      if (isTimerRunning) {
         _timerText = sprintf("%02d:%02d", [minutes, seconds]);
 
         if (minutes >= _selectedMinutes) {
@@ -176,12 +180,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     });
 
     // When timer is finished, store the time
-    print("$_isTimerRunning");
-    if(!_isTimerRunning){
+    if(!isTimerRunning){
       await _storeMindfulMinutes(minutes);
     } else {
       // Or schedule for the next update
-      Timer.periodic(Duration(seconds: 1), (timer) async {
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
         await _updateTimer();
         timer.cancel();
       });
@@ -193,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     print("Stopping timer");
     _animationController.reverse();
     setState(() {
-      _isTimerRunning = false;
+      isTimerRunning = false;
       _startDateTime = null;
       _timerText = "00:00";
     });

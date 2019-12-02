@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoApp(
       title: 'Spiramentum 2',
-      home: MyHomePage(title: 'Spiramentum 2'),
+      home: MyHomePage(key: Key('home'), title: 'Spiramentum 2'),
     );
   }
 }

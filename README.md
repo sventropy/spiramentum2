@@ -11,7 +11,7 @@ Key aspects:
 - minor animation
 - native plugins for UNUserNotifications (when app is in foreground and background) and HealthKit write access
 
-![](./../../img/spiramentum2.gif)
+![](./img/spiramentum2.gif)
 
 ## Hey, that's a Flutter app, what about Android?
 

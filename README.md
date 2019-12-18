@@ -11,7 +11,7 @@ Key aspects:
 - minor animation
 - native plugins for UNUserNotifications (when app is in foreground and background) and HealthKit write access
 
-![](./img/spiramentum2.gif)
+<img src="./img/spiramentum2.gif" alt="gif" width="400"/>
 
 ## Hey, that's a Flutter app, what about Android?
 
@@ -26,7 +26,9 @@ Ask [wikipedia](https://en.wiktionary.org/wiki/spiramentum)
 I've built this app a couple of times in Swift, SwiftUI, Xamarin.Forms and Flutter to get a feeling
 of the different frameworks and approaches. I ended up with Flutter because it is easy to learn
 and "works". SwiftUI on the other hand is too buggy and I have spent too much time with Swift and 
-Xamarin. So long story short, this app has (at least) earned major version number 2. ¯\_(ツ)_/¯
+Xamarin. So long story short, this app has (at least) earned major version number 2. 
+
+¯\\_(ツ)_/¯
 
 ## License
 

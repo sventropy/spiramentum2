@@ -105,6 +105,7 @@ import UserNotificationsUI
         content.title = title
         content.body = message
         content.badge = 1
+        content.sound = UNNotificationSound.default()
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1,
                                                         repeats: false)

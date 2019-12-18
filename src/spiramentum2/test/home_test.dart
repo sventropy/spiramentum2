@@ -13,7 +13,7 @@ import 'package:spiramentum2/main.dart';
 void main() {
   testWidgets('Initial rendering', (WidgetTester tester) async {
     await tester.pumpWidget(MyApp());
-    expect(find.text("How much time do you want to spend on yourself today?"),
+    expect(find.text("How much time do you want to spend?"),
         findsOneWidget);
     expect(find.byWidgetPredicate((Widget widget) => widget is CupertinoPicker),
         findsOneWidget);

@@ -4,7 +4,7 @@ class Logger {
   static final instance = Logger();
 
   trace(String message){
-    developer.log(message, level: 100, name: "trace");
+    developer.log(message, level: 1000, name: "trace");
   }
   debug(String message){
     developer.log(message, level: 100, name: "debug");

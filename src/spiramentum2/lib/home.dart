@@ -59,7 +59,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
 
     final titleText = Padding(
       padding: EdgeInsets.all(16),
-      child: Text("How much time do you want to spend on yourself today?",
+      child: Text("How much time do you want to spend?",
         style: TextStyle(
             fontWeight: FontWeight.bold,
             color: kPrimaryAccentColor
@@ -205,7 +205,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
 
   Future _storeMindfulMinutes(int minutes) async {
     await _mindfulStore.storeMindfulMinutes(minutes);
-    await _notificationService.showNotification("Mindful time complete", "Time spent was stored in HealthKit");
+    await _notificationService.showNotification("Mindful session complete", "The time you spent was stored in your Health App");
   }
 
   int _minutesForPickerIndex(int index) {

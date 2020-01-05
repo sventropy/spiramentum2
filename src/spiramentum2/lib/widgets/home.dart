@@ -18,8 +18,8 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState();
 }
 
-class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-
+class MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   bool isTimerRunning;
   String _timerText;
   DateTime _startDateTime;
@@ -39,16 +39,18 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
     _selectedMinutes = 1;
     _mindfulStore = new MindfulStore();
     _notificationService = new NotificationService();
-    _animationController  =
-        AnimationController(duration: const Duration(milliseconds: 400), vsync: this);
-    _pickerAnimation = Tween<double>(begin: 1, end: 0).animate(_animationController);
-    _counterLabelAnimation = Tween<double>(begin: 0, end: 1).animate(_animationController);
+    _animationController = AnimationController(
+        duration: const Duration(milliseconds: 400), vsync: this);
+    _pickerAnimation =
+        Tween<double>(begin: 1, end: 0).animate(_animationController);
+    _counterLabelAnimation =
+        Tween<double>(begin: 0, end: 1).animate(_animationController);
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    if(_timer != null) {
+    if (_timer != null) {
       _timer.cancel();
       _timer = null;
     }
@@ -57,44 +59,22 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
 
   @override
   Widget build(BuildContext context) {
-
     final titleText = Padding(
-      padding: EdgeInsets.all(16),
-      child: Text("How much time do you want to spend?",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: kPrimaryAccentColor
-        ),
-        textScaleFactor: 2,
-        textAlign: TextAlign.center)
-    );
+        padding: EdgeInsets.all(16),
+        child: Text("How much time do you want to spend?",
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: kPrimaryAccentColor),
+            textScaleFactor: 2,
+            textAlign: TextAlign.center));
 
-//    final durationPicker = CupertinoPicker(
-//      backgroundColor: Colors.transparent,
-//      children: <Widget>[
-//        Text("1 minute", style: TextStyle(color: kTextColor)),
-//        Text("2 minutes", style: TextStyle(color: kTextColor)),
-//        Text("5 minutes", style: TextStyle(color: kTextColor)),
-//        Text("10 minutes", style: TextStyle(color: kTextColor)),
-//        Text("20 minutes", style: TextStyle(color: kTextColor)),
-//        Text("30 minutes", style: TextStyle(color: kTextColor)),
-//        Text("60 minutes", style: TextStyle(color: kTextColor)),
-//      ],
-//      itemExtent: 44.0,
-//      onSelectedItemChanged: (index) {
-//        _selectedMinutes = _minutesForPickerIndex(index);
-//        Logger.instance.debug("Interval updated to $_selectedMinutes minutes");
-//      },
-//    );
-    final durationPicker = MindfulTimer();
+    final durationPicker = MindfulTimer(onTimerDurationUpdated: (minutes) {
+      _selectedMinutes = minutes;
+      Logger.instance.debug("Interval updated to $_selectedMinutes minutes");
+    });
 
     final pickerTransition = SizeTransition(
         sizeFactor: _pickerAnimation,
-        child: Container(
-          height: 200,
-          child: durationPicker
-        )
-    );
+        child: Container(height: 200, child: durationPicker));
 
     final timerTextTransition = SizeTransition(
       sizeFactor: _counterLabelAnimation,
@@ -102,9 +82,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
         child: Text(
           _timerText,
           style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 64.0,
-              color: kTextColor),
+              fontWeight: FontWeight.bold, fontSize: 64.0, color: kTextColor),
           textAlign: TextAlign.center,
         ),
       ),
@@ -113,10 +91,11 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
     final startStopButton = CupertinoButton(
       color: kPrimaryAccentColor,
       child: Icon(
-          isTimerRunning ? CupertinoIcons.clear : CupertinoIcons.play_arrow_solid,
+          isTimerRunning
+              ? CupertinoIcons.clear
+              : CupertinoIcons.play_arrow_solid,
           color: kTextColor,
-          size: 44
-      ),
+          size: 44),
       onPressed: () {
         if (isTimerRunning) {
           this._cancelTimer();
@@ -151,11 +130,9 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
     );
   }
 
-
-  Future _updateTimer () async {
-
+  Future _updateTimer() async {
     // User might have canceled timer
-    if (!isTimerRunning){
+    if (!isTimerRunning) {
       return;
     }
 
@@ -175,7 +152,6 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
           this._cancelTimer();
           return;
         }
-
       } else {
         // No timer to schedule
         _timerText = "00:00";
@@ -183,7 +159,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
     });
 
     // When timer is finished, store the time
-    if(!isTimerRunning){
+    if (!isTimerRunning) {
       await _storeMindfulMinutes(minutes);
     } else {
       // Or schedule for the next update
@@ -207,37 +183,7 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
 
   Future _storeMindfulMinutes(int minutes) async {
     await _mindfulStore.storeMindfulMinutes(minutes);
-    await _notificationService.showNotification("Mindful session complete", "The time you spent was stored in your Health App");
-  }
-
-  int _minutesForPickerIndex(int index) {
-    switch (index) {
-      case 0:
-        return 1;
-        break;
-      case 1:
-        return 2;
-        break;
-      case 2:
-        return 5;
-        break;
-      case 3:
-        return 10;
-        break;
-      case 4:
-        return 15;
-        break;
-      case 5:
-        return 20;
-        break;
-      case 6:
-        return 30;
-        break;
-      case 7:
-        return 60;
-        break;
-      default:
-        return 0;
-    }
+    await _notificationService.showNotification("Mindful session complete",
+        "The time you spent was stored in your Health App");
   }
 }

@@ -4,11 +4,17 @@ import 'package:flutter/services.dart';
 import "./../common/logger.dart";
 import 'package:sprintf/sprintf.dart';
 
+// Allows the user of this control to get notified on duration updates
+typedef TimerDurationUpdateCallback = void Function(int minutes);
+
 class MindfulTimer extends StatefulWidget {
-  MindfulTimer({Key key}) : super(key: key);
+  MindfulTimer({Key key, this.onTimerDurationUpdated}) : super(key: key);
+
+  // Route through delegate to state
+  final TimerDurationUpdateCallback onTimerDurationUpdated;
 
   @override
-  MindfulTimerState createState() => MindfulTimerState();
+  MindfulTimerState createState() => MindfulTimerState(onTimerDurationUpdated);
 }
 
 class MindfulTimerState extends State<MindfulTimer> {
@@ -16,6 +22,10 @@ class MindfulTimerState extends State<MindfulTimer> {
   ValueNotifier<Offset> _notifier;
   double _selectionAngleDegrees;
   String _selectionText;
+
+  final TimerDurationUpdateCallback onTimerDurationUpdated;
+
+  MindfulTimerState(this.onTimerDurationUpdated) : super();
 
   @override
   void initState() {
@@ -53,6 +63,7 @@ class MindfulTimerState extends State<MindfulTimer> {
           setState(() {
             _selectionText = sprintf("%02d:00", [minutes]);
           });
+          this.onTimerDurationUpdated(minutes);
           HapticFeedback.selectionClick();
         },
         child: CustomPaint(

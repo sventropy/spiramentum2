@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
-import 'package:spiramentum2/mindfulStore.dart';
-import 'package:spiramentum2/notificationService.dart';
+import 'package:spiramentum2/platform/mindfulStore.dart';
+import 'package:spiramentum2/platform/notificationService.dart';
 import 'package:sprintf/sprintf.dart';
 import 'dart:async';
-import 'theme.dart';
-import 'logger.dart';
+import '../common/theme.dart';
+import '../common/logger.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);

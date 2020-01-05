@@ -7,7 +7,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:spiramentum2/home.dart';
+import 'package:spiramentum2/widgets/home.dart';
 import 'package:spiramentum2/main.dart';
 
 void main() {

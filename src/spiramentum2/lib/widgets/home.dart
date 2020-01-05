@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
 import 'package:spiramentum2/platform/mindfulStore.dart';
 import 'package:spiramentum2/platform/notificationService.dart';
+import 'package:spiramentum2/widgets/mindfulTimer.dart';
 import 'package:sprintf/sprintf.dart';
 import 'dart:async';
 import '../common/theme.dart';
@@ -68,23 +69,24 @@ class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMi
         textAlign: TextAlign.center)
     );
 
-    final durationPicker = CupertinoPicker(
-      backgroundColor: Colors.transparent,
-      children: <Widget>[
-        Text("1 minute", style: TextStyle(color: kTextColor)),
-        Text("2 minutes", style: TextStyle(color: kTextColor)),
-        Text("5 minutes", style: TextStyle(color: kTextColor)),
-        Text("10 minutes", style: TextStyle(color: kTextColor)),
-        Text("20 minutes", style: TextStyle(color: kTextColor)),
-        Text("30 minutes", style: TextStyle(color: kTextColor)),
-        Text("60 minutes", style: TextStyle(color: kTextColor)),
-      ],
-      itemExtent: 44.0,
-      onSelectedItemChanged: (index) {
-        _selectedMinutes = _minutesForPickerIndex(index);
-        Logger.instance.debug("Interval updated to $_selectedMinutes minutes");
-      },
-    );
+//    final durationPicker = CupertinoPicker(
+//      backgroundColor: Colors.transparent,
+//      children: <Widget>[
+//        Text("1 minute", style: TextStyle(color: kTextColor)),
+//        Text("2 minutes", style: TextStyle(color: kTextColor)),
+//        Text("5 minutes", style: TextStyle(color: kTextColor)),
+//        Text("10 minutes", style: TextStyle(color: kTextColor)),
+//        Text("20 minutes", style: TextStyle(color: kTextColor)),
+//        Text("30 minutes", style: TextStyle(color: kTextColor)),
+//        Text("60 minutes", style: TextStyle(color: kTextColor)),
+//      ],
+//      itemExtent: 44.0,
+//      onSelectedItemChanged: (index) {
+//        _selectedMinutes = _minutesForPickerIndex(index);
+//        Logger.instance.debug("Interval updated to $_selectedMinutes minutes");
+//      },
+//    );
+    final durationPicker = MindfulTimer();
 
     final pickerTransition = SizeTransition(
         sizeFactor: _pickerAnimation,

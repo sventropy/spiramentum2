@@ -74,7 +74,7 @@ class MyHomePageState extends State<MyHomePage>
 
     final pickerTransition = SizeTransition(
         sizeFactor: _pickerAnimation,
-        child: Container(height: 200, child: durationPicker));
+        child: Container(height: 300, child: durationPicker));
 
     final timerTextTransition = SizeTransition(
       sizeFactor: _counterLabelAnimation,

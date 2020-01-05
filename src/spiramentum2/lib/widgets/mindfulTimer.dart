@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import "dart:math";
 import 'package:flutter/services.dart';
-import "./../common/logger.dart";
 import 'package:sprintf/sprintf.dart';
+import '../common/theme.dart';
 
 // Allows the user of this control to get notified on duration updates
 typedef TimerDurationUpdateCallback = void Function(int minutes);
@@ -14,24 +14,20 @@ class MindfulTimer extends StatefulWidget {
   final TimerDurationUpdateCallback onTimerDurationUpdated;
 
   @override
-  MindfulTimerState createState() => MindfulTimerState(onTimerDurationUpdated);
+  MindfulTimerState createState() => MindfulTimerState();
 }
 
 class MindfulTimerState extends State<MindfulTimer> {
-  final _radius = 86.0;
+  final _radius = 134.0;
   ValueNotifier<Offset> _notifier;
   double _selectionAngleDegrees;
   String _selectionText;
-
-  final TimerDurationUpdateCallback onTimerDurationUpdated;
-
-  MindfulTimerState(this.onTimerDurationUpdated) : super();
 
   @override
   void initState() {
     super.initState();
     _notifier = ValueNotifier(null);
-    _selectionAngleDegrees = 0;
+    _selectionAngleDegrees = -90;
     _selectionText = "00:00";
   }
 
@@ -63,12 +59,12 @@ class MindfulTimerState extends State<MindfulTimer> {
           setState(() {
             _selectionText = sprintf("%02d:00", [minutes]);
           });
-          this.onTimerDurationUpdated(minutes);
+          widget.onTimerDurationUpdated(minutes);
           HapticFeedback.selectionClick();
         },
         child: CustomPaint(
           // We assume that centers for the painter and this wrapper are the same, hence we do not need to pass the center as a parameter
-          painter: TimerPainter(_notifier, _radius),
+          painter: TimerPainter(_notifier, _radius, _selectionAngleDegrees),
           child: Center(
             child: Text(
               _selectionText,
@@ -87,10 +83,10 @@ class TimerPainter extends CustomPainter {
   final _padding = 16.0;
   ValueNotifier<Offset> _notifier;
   double _radius = 0;
+  double _angleDegrees;
 
-  TimerPainter(this._notifier, double radius) : super(repaint: _notifier) {
-    _radius = radius;
-  }
+  TimerPainter(this._notifier, this._radius, this._angleDegrees)
+      : super(repaint: _notifier);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -107,10 +103,19 @@ class TimerPainter extends CustomPainter {
     }
 
     // draw the circle on centre and filling the available space
-    paint.color = Colors.deepPurple;
+    paint.color = kPrimaryAccentColor;
     canvas.drawCircle(center, _radius, paint);
-    paint.color = Colors.white;
+    paint.color = kTextColor;
     canvas.drawCircle(pointerPosition, _padding, paint);
+    paint.style = PaintingStyle.stroke;
+    paint.strokeWidth = 16;
+
+    // Correct angles on left side of center
+    var angle = _angleDegrees < -90 ? _angleDegrees + 360 : _angleDegrees;
+    // Correct angle start from x-axis to top
+    var arcAngle = (angle + 90) / 180 * pi;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: _radius), -0.5 * pi,
+        arcAngle, false, paint);
   }
 
   @override

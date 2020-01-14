@@ -19,8 +19,9 @@ class MindfulTimer extends StatefulWidget {
 
 class MindfulTimerState extends State<MindfulTimer> {
   final _radius = 134.0;
+  final int _zeroAngleDegrees = -90;
   ValueNotifier<Offset> _notifier;
-  double _selectionAngleDegrees;
+  int _selectionAngleDegrees;
   String _selectionText;
 
   @override
@@ -35,17 +36,21 @@ class MindfulTimerState extends State<MindfulTimer> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onPanUpdate: (details) {
+          // Get the angle of the touch compared to the y axis
           var angle = -atan2(context.size.width / 2 - details.localPosition.dx,
               context.size.height / 2 - details.localPosition.dy);
 
           // Only allow updates in 1 minute steps, assuming the entire circle is "60 minutes", there are 60 steps allowed, 6 degrees/1 minute each
           // start at the top, not at x = 0
-          var angleDegrees = angle * 180 / pi - 90;
+          var angleDegrees = (angle * 180 / pi + _zeroAngleDegrees).toInt();
+          if (angleDegrees < _zeroAngleDegrees) angleDegrees += 360;
           // only allow defined steps
           angleDegrees = angleDegrees - angleDegrees % 6;
 
           // Only update if the angle actually changes
           if (angleDegrees == _selectionAngleDegrees) return;
+
+          // This is the new angle to render
           _selectionAngleDegrees = angleDegrees;
 
           // Calculate position based on angle
@@ -57,7 +62,6 @@ class MindfulTimerState extends State<MindfulTimer> {
 
           // User feedback
           var minutes = (_selectionAngleDegrees / 6 + 15).round();
-          if (minutes < 0) minutes += 60;
           setState(() {
             _selectionText = sprintf("%02d:00", [minutes]);
           });
@@ -66,7 +70,8 @@ class MindfulTimerState extends State<MindfulTimer> {
         },
         child: CustomPaint(
           // We assume that centers for the painter and this wrapper are the same, hence we do not need to pass the center as a parameter
-          painter: TimerPainter(_notifier, _radius, _selectionAngleDegrees),
+          painter: TimerPainter(
+              _notifier, _radius, _selectionAngleDegrees.toDouble()),
           child: Center(
             child: Text(
               _selectionText,

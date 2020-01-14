@@ -19,18 +19,22 @@ class MindfulTimer extends StatefulWidget {
 }
 
 class MindfulTimerState extends State<MindfulTimer> {
-  final _radius = 134.0;
-  final int _zeroAngleDegrees = -90;
+  // Only allow updates in 1 minute steps, assuming the entire circle is "60 minutes", there are 60 steps allowed, 6 degrees/1 minute each
+  static final int _minutesPerStep = 1;
+  static final int _degreesPerStep = 360 ~/ 60 ~/ _minutesPerStep;
+  static final _radius = 134.0;
+  static final int _zeroAngleDegrees = -90;
+
   ValueNotifier<Offset> _notifier;
   int _selectionAngleDegrees;
-  String _selectionText;
+  String _timerText;
 
   @override
   void initState() {
     super.initState();
     _notifier = ValueNotifier(null);
     _selectionAngleDegrees = -90;
-    _selectionText = "00:00";
+    _timerText = "00:00";
   }
 
   @override
@@ -41,12 +45,12 @@ class MindfulTimerState extends State<MindfulTimer> {
           var angle = -atan2(context.size.width / 2 - details.localPosition.dx,
               context.size.height / 2 - details.localPosition.dy);
 
-          // Only allow updates in 1 minute steps, assuming the entire circle is "60 minutes", there are 60 steps allowed, 6 degrees/1 minute each
           // start at the top, not at x = 0
           var angleDegrees = (angle * 180 / pi + _zeroAngleDegrees).toInt();
           if (angleDegrees < _zeroAngleDegrees) angleDegrees += 360;
+
           // only allow defined steps
-          angleDegrees = angleDegrees - angleDegrees % 6;
+          angleDegrees = angleDegrees - angleDegrees % _degreesPerStep;
 
           // Only update if the angle actually changes
           if (angleDegrees == _selectionAngleDegrees) return;
@@ -62,9 +66,9 @@ class MindfulTimerState extends State<MindfulTimer> {
           _notifier.value = newPosition;
 
           // User feedback
-          var minutes = (_selectionAngleDegrees / 6 + 15).round();
+          var minutes = (_selectionAngleDegrees / _degreesPerStep + 15).round();
           setState(() {
-            _selectionText = sprintf("%02d:00", [minutes]);
+            _timerText = sprintf("%02d:00", [minutes]);
           });
           widget.onTimerDurationUpdated(minutes);
           HapticFeedback.selectionClick();
@@ -75,7 +79,7 @@ class MindfulTimerState extends State<MindfulTimer> {
               _notifier, _radius, _selectionAngleDegrees.toDouble()),
           child: Center(
             child: Text(
-              _selectionText,
+              _timerText,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 64.0,

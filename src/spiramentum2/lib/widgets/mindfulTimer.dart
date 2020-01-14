@@ -38,9 +38,11 @@ class MindfulTimerState extends State<MindfulTimer> {
           var angle = -atan2(context.size.width / 2 - details.localPosition.dx,
               context.size.height / 2 - details.localPosition.dy);
 
-          // Only allow updates for 5 minute steps, assuming the entire circle is "60 minutes", means there are 12 steps allowed, 30 degrees/5 minutes each
+          // Only allow updates in 1 minute steps, assuming the entire circle is "60 minutes", there are 60 steps allowed, 6 degrees/1 minute each
+          // start at the top, not at x = 0
           var angleDegrees = angle * 180 / pi - 90;
-          angleDegrees = angleDegrees - angleDegrees % 30;
+          // only allow defined steps
+          angleDegrees = angleDegrees - angleDegrees % 6;
 
           // Only update if the angle actually changes
           if (angleDegrees == _selectionAngleDegrees) return;
@@ -54,7 +56,7 @@ class MindfulTimerState extends State<MindfulTimer> {
           _notifier.value = newPosition;
 
           // User feedback
-          var minutes = (_selectionAngleDegrees / 30 * 5 + 15).round();
+          var minutes = (_selectionAngleDegrees / 6 + 15).round();
           if (minutes < 0) minutes += 60;
           setState(() {
             _selectionText = sprintf("%02d:00", [minutes]);

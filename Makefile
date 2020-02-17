@@ -7,6 +7,9 @@ clean:
 run:
 	flutter run
 
+test:
+	flutter test
+
 sim:
 	open -a Simulator
 

@@ -9,7 +9,6 @@ import '../common/theme.dart';
 import '../common/logger.dart';
 
 final _animationDuration = Duration(milliseconds: 500);
-final _fastAnimationDuration = Duration(milliseconds: 1);
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);

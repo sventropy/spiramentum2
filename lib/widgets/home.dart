@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/animation.dart';
 import 'package:spiramentum2/platform/mindfulStore.dart';
 import 'package:spiramentum2/platform/notificationService.dart';
 import 'package:spiramentum2/widgets/mindfulTimer.dart';
@@ -8,6 +7,9 @@ import 'package:sprintf/sprintf.dart';
 import 'dart:async';
 import '../common/theme.dart';
 import '../common/logger.dart';
+
+final _animationDuration = Duration(milliseconds: 500);
+final _fastAnimationDuration = Duration(milliseconds: 1);
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -26,9 +28,6 @@ class MyHomePageState extends State<MyHomePage>
   int _selectedMinutes;
   MindfulStore _mindfulStore;
   NotificationService _notificationService;
-  AnimationController _animationController;
-  Animation<double> _pickerAnimation;
-  Animation<double> _counterLabelAnimation;
   Timer _timer;
 
   @override
@@ -39,17 +38,10 @@ class MyHomePageState extends State<MyHomePage>
     _selectedMinutes = 1;
     _mindfulStore = new MindfulStore();
     _notificationService = new NotificationService();
-    _animationController = AnimationController(
-        duration: const Duration(milliseconds: 400), vsync: this);
-    _pickerAnimation =
-        Tween<double>(begin: 1, end: 0).animate(_animationController);
-    _counterLabelAnimation =
-        Tween<double>(begin: 0, end: 1).animate(_animationController);
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
     if (_timer != null) {
       _timer.cancel();
       _timer = null;
@@ -72,21 +64,29 @@ class MyHomePageState extends State<MyHomePage>
       Logger.instance.debug("Interval updated to $_selectedMinutes minutes");
     });
 
-    final pickerTransition = SizeTransition(
-        sizeFactor: _pickerAnimation,
-        child: Container(height: 300, child: durationPicker));
+    final pickerTransition = Container(
+        height: 300,
+        child: AnimatedOpacity(
+            opacity: isTimerRunning ? 0.0 : 1.0,
+            duration: _animationDuration,
+            child: durationPicker));
 
-    final timerTextTransition = SizeTransition(
-      sizeFactor: _counterLabelAnimation,
-      child: Center(
-        child: Text(
-          _timerText,
-          style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 64.0, color: kTextColor),
-          textAlign: TextAlign.center,
-        ),
+    final timerText = Center(
+      child: Text(
+        _timerText,
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 64.0, color: kTextColor),
+        textAlign: TextAlign.center,
       ),
     );
+
+    final timerTextTransition = Container(
+        height: 300,
+        child: AnimatedOpacity(
+          opacity: isTimerRunning ? 1.0 : 0.0,
+          duration: _animationDuration,
+          child: timerText,
+        ));
 
     final startStopButton = CupertinoButton(
       color: kPrimaryAccentColor,
@@ -99,9 +99,8 @@ class MyHomePageState extends State<MyHomePage>
       onPressed: () {
         if (isTimerRunning) {
           this._cancelTimer();
-        } else {
+        } else if (_selectedMinutes > 0) {
           Logger.instance.debug("Starting timer");
-          _animationController.forward();
           // Timer is not running
           isTimerRunning = true;
           _startDateTime = DateTime.now();
@@ -119,8 +118,7 @@ class MyHomePageState extends State<MyHomePage>
             Spacer(),
             titleText,
             Spacer(),
-            pickerTransition,
-            timerTextTransition,
+            isTimerRunning ? timerTextTransition : pickerTransition,
             Spacer(),
             startStopButton,
             Spacer()
@@ -139,15 +137,18 @@ class MyHomePageState extends State<MyHomePage>
     // Calculate time
     DateTime currentDateTime = DateTime.now();
     Duration difference = currentDateTime.difference(_startDateTime);
-    int minutes = difference.inMinutes;
-    int seconds = difference.inSeconds - minutes * 60;
+    int minutes = _selectedMinutes - difference.inMinutes;
+    int seconds = (60 - difference.inSeconds) % 60;
+    if (seconds > 0) {
+      minutes--;
+    }
 
     // Update UI
     setState(() {
       if (isTimerRunning) {
         _timerText = sprintf("%02d:%02d", [minutes, seconds]);
 
-        if (minutes >= _selectedMinutes) {
+        if (minutes <= 0) {
           Logger.instance.debug("Timer goal reached.");
           this._cancelTimer();
           return;
@@ -173,11 +174,11 @@ class MyHomePageState extends State<MyHomePage>
 
   _cancelTimer() {
     Logger.instance.debug("Stopping timer");
-    _animationController.reverse();
     setState(() {
       isTimerRunning = false;
       _startDateTime = null;
       _timerText = "00:00";
+      _selectedMinutes = 0;
     });
   }
 

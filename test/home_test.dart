@@ -13,12 +13,7 @@ import 'package:spiramentum2/main.dart';
 void main() {
   testWidgets('Initial rendering', (WidgetTester tester) async {
     await tester.pumpWidget(MyApp());
-    expect(find.text("How much time do you want to spend?"),
-        findsOneWidget);
-    expect(find.byWidgetPredicate((Widget widget) => widget is CupertinoPicker),
-        findsOneWidget);
-    expect(tester.getSize(find.byWidgetPredicate((Widget widget) => widget is SizeTransition && widget.child is Center)).height, 0);
-    expect(tester.getSize(find.byWidgetPredicate((Widget widget) => widget is SizeTransition && widget.child is Container)).height, 200);
+    expect(find.text("How much time do you want to spend?"), findsOneWidget);
     expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
   });
 

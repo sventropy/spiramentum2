@@ -161,7 +161,7 @@ class MyHomePageState extends State<MyHomePage>
 
     // When timer is finished, store the time
     if (!isTimerRunning) {
-      await _storeMindfulMinutes(minutes);
+      await _storeMindfulMinutes(difference.inMinutes);
     } else {
       // Or schedule for the next update
       _timer = Timer.periodic(Duration(seconds: 1), (timer) async {

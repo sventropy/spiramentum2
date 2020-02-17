@@ -147,7 +147,7 @@ class MyHomePageState extends State<MyHomePage>
       if (isTimerRunning) {
         _timerText = sprintf("%02d:%02d", [minutes, seconds]);
 
-        if (minutes <= 0) {
+        if (minutes <= 0 && seconds <= 0) {
           Logger.instance.debug("Timer goal reached.");
           this._cancelTimer();
           return;
